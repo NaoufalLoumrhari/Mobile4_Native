@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "637236824935",
+    "firebase_url": "https://mobile4native.firebaseio.com",
+    "project_id": "mobile4native",
+    "storage_bucket": "mobile4native.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:637236824935:android:acfbb7221012c0ce",
+        "android_client_info": {
+          "package_name": "com.example.sjeikh_naoufal.mobile4_naoufalloumrhari"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "637236824935-tk0qukgh96106rkgio6fuvelb044ldih.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDC0x_j-l1mmnw8A61L2_Kx-FGYsrBzf88"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
