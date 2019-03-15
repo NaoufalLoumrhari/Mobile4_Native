@@ -20,9 +20,13 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import com.google.firebase.auth.FirebaseAuth
+
 
 import java.util.ArrayList
 import android.Manifest.permission.READ_CONTACTS
+import android.util.Log
+import android.widget.Toast
 
 import kotlinx.android.synthetic.main.activity_login.*
 
@@ -34,21 +38,90 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private var mAuthTask: UserLoginTask? = null
+    private var mAuth: FirebaseAuth? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+        mAuth = FirebaseAuth.getInstance()
         // Set up the login form.
         populateAutoComplete()
-        password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
+        tvPassword.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
             if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLogin()
                 return@OnEditorActionListener true
             }
             false
         })
-
         aanmelden.setOnClickListener { attemptLogin() }
+    }
+
+    public override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = mAuth?.currentUser
+    }
+
+    private fun createAccount(email:String, password: String){
+        mAuth?.createUserWithEmailAndPassword(email, password)
+            ?.addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    val user = mAuth?.currentUser
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("Error", "createUserWithEmail:failure", task.exception)
+                    Toast.makeText(baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show()
+                }
+
+                // ...
+            }
+    }
+
+    private fun signIn(email:String, password:String){
+        mAuth?.signInWithEmailAndPassword(email, password)
+            ?.addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success
+                    val user = mAuth?.currentUser
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("Error", "signInWithEmail:failure", task.exception)
+                    Toast.makeText(baseContext, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show()
+                }
+
+                // ...
+            }
+    }
+    /*
+    signin moet niet bij registreer user maar bij een andere functie die je nog moet maken
+
+     */
+    private fun registreerUser(view: View){
+        //gegevens ophalen
+        signIn(tvEmail.text.toString(), tvPassword.text.toString())
+    }
+
+    private fun getCurrentUser(){
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.let {
+            // Name, email address, and profile photo Url
+            val name = user.displayName
+            val email = user.email
+            val photoUrl = user.photoUrl
+
+            // Check if user's email is verified
+            val emailVerified = user.isEmailVerified
+
+            // The user's ID, unique to the Firebase project. Do NOT use this value to
+            // authenticate with your backend server, if you have one. Use
+            // FirebaseUser.getToken() instead.
+            val uid = user.uid
+        }
     }
 
     private fun populateAutoComplete() {
@@ -67,7 +140,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             return true
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(email, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(tvEmail, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                 .setAction(android.R.string.ok,
                     { requestPermissions(arrayOf(READ_CONTACTS), REQUEST_READ_CONTACTS) })
         } else {
@@ -102,31 +175,31 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
         }
 
         // Reset errors.
-        email.error = null
-        password.error = null
+        tvEmail.error = null
+        tvPassword.error = null
 
         // Store values at the time of the login attempt.
-        val emailStr = email.text.toString()
-        val passwordStr = password.text.toString()
+        val emailStr = tvEmail.text.toString()
+        val passwordStr = tvPassword.text.toString()
 
         var cancel = false
         var focusView: View? = null
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(passwordStr) && !isPasswordValid(passwordStr)) {
-            password.error = getString(R.string.error_invalid_password)
-            focusView = password
+            tvPassword.error = getString(R.string.error_invalid_password)
+            focusView = tvPassword
             cancel = true
         }
 
         // Check for a valid email address.
         if (TextUtils.isEmpty(emailStr)) {
-            email.error = getString(R.string.error_field_required)
-            focusView = email
+            tvEmail.error = getString(R.string.error_field_required)
+            focusView = tvEmail
             cancel = true
         } else if (!isEmailValid(emailStr)) {
-            email.error = getString(R.string.error_invalid_email)
-            focusView = email
+            tvEmail.error = getString(R.string.error_invalid_email)
+            focusView = tvEmail
             cancel = true
         }
 
@@ -234,7 +307,7 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             android.R.layout.simple_dropdown_item_1line, emailAddressCollection
         )
 
-        email.setAdapter(adapter)
+        tvEmail.setAdapter(adapter)
     }
 
     object ProfileQuery {
@@ -280,8 +353,8 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
             if (success!!) {
                 finish()
             } else {
-                password.error = getString(R.string.error_incorrect_password)
-                password.requestFocus()
+                tvPassword.error = getString(R.string.error_incorrect_password)
+                tvPassword.requestFocus()
             }
         }
 

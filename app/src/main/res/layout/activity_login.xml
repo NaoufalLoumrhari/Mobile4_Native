@@ -36,7 +36,7 @@
                     android:layout_height="wrap_content">
 
                 <AutoCompleteTextView
-                        android:id="@+id/email"
+                        android:id="@+id/tvEmail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/prompt_email"
@@ -51,7 +51,7 @@
                     android:layout_height="wrap_content">
 
                 <EditText
-                        android:id="@+id/password"
+                        android:id="@+id/tvPassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="@string/prompt_password"
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Registreer"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" android:onClick="registreerUser"/>
 
         </LinearLayout>
     </ScrollView>
